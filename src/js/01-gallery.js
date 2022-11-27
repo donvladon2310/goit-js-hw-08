@@ -2,10 +2,10 @@ import { galleryItems } from './gallery-items.js';
 // import SimpleLightbox from 'simplelightbox';
 // @ts-ignore
 import SimpleLightbox from 'simplelightbox'; // import library
-// // @ts-ignore
+// @ts-ignore
 // import * as Simplelightbox from "simplelightbox";
 
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 // Change code below this line
 
@@ -22,7 +22,7 @@ function onCreateGalleryItem(galleryItems) {
       return `
       <a class="gallery__item" href="${original}">
         <img class="gallery__image lazyload"
-        data-src="${preview}"
+        src="${preview}"
         alt="${description}" />
       </a>`;
     })

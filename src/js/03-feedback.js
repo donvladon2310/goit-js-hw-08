@@ -1,29 +1,41 @@
-import throttle from 'lodash.throttle';
+const throttle = require('lodash.throttle');
 
 const form = document.querySelector('.feedback-form');
-form.addEventListener('input', throttle(onFormData, 500));
-form.addEventListener('submit', onSubmitForm);
+const email = document.querySelector('input[name="email"]');
+const message = document.querySelector('textarea[name="message"]');
 
-const formData = {};
+const LOCALSTORAGE_KEY = 'feedback-form-state';
 
-function onFormData(e) {
-    formData[e.target.name] = e.target.value;
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-}
+const saveData = () => {
+    const formData = { email: email.value, message: message.value };
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(formData));
+};
 
-function onSubmitForm(e) {
-    console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
-    e.preventDefault();
-    e.currentTarget.reset();
-    localStorage.removeItem('feedback-form-state');
-}
-
-(function dataFromLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('feedback-form-state'));
-    const email = document.querySelector('.feedback-form input');
-    const message = document.querySelector('.feedback-form textarea');
-    if (data) {
-        email.value = data.email;
-        message.value = data.message;
+const sendData = evt => {
+    evt.preventDefault();
+    if (email.value === '' || message.value === '') {
+        alert('Please fill all fields');
+    } else {
+        console.log({ email: email.value, message: message.value });
+        evt.currentTarget.reset();
+        localStorage.removeItem(LOCALSTORAGE_KEY);
     }
-})();
+};
+
+const checkedKey = key => {
+    try {
+        const keyForCheck = localStorage.getItem(key);
+        return keyForCheck === null ? undefined : JSON.parse(keyForCheck);
+    } catch (error) {
+        console.error('Key checked error: ', error.message);
+    }
+};
+
+const savedKey = checkedKey(LOCALSTORAGE_KEY);
+if (savedKey) {
+    email.value = savedKey.email;
+    message.value = savedKey.message;
+}
+
+form.addEventListener('input', throttle(saveData, 500));
+form.addEventListener('submit', sendData);
